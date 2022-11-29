@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { requestToBodyStream } from "next/dist/server/body-streams";
 import { dbConnect } from "~/libraries/mongoose.library";
 import { Playlist } from "~/models/Playlist.model";
+import { DEFAULT_CARD_COLOR } from "~/config/common.config";
 
 export default async function handler(
     req: NextApiRequest,
@@ -14,15 +14,10 @@ export default async function handler(
         res.status(200).send({ data: playlists });
     } else if (req.method === "POST") {
         await createPlaylist(req.body);
+        const playlists = await getPlaylists();
+        const n = playlists.length;
         res.status(201).send({
-            data: {
-                color: req.body.color || "#000000",
-                name: req.body.name,
-                owner: req.body.owner,
-                slug: req.body.slug,
-                spotifyId: req.body.spotifyId,
-                upvote: req.body.upvote,
-            },
+            data: playlists[n - 1],
         });
     }
 }
@@ -30,14 +25,15 @@ export default async function handler(
 async function getPlaylists() {
     const result = await Playlist.find();
     return result.map((doc) => {
+        const playlist = doc.toObject();
         return {
-            color: doc.color,
-            id: doc._id,
-            name: doc.name,
-            owner: doc.owner,
-            slug: doc.slug,
-            spotifyId: doc.spotifyId,
-            upvote: doc.upvote,
+            color: playlist.color || DEFAULT_CARD_COLOR,
+            id: playlist._id.toString(),
+            name: playlist.name,
+            owner: playlist.owner,
+            slug: playlist.slug,
+            spotifyId: playlist.spotifyId,
+            upvote: playlist.upvote,
         };
     });
 }

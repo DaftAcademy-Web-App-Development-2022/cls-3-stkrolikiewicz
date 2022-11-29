@@ -6,6 +6,7 @@ import getPlaylist from "../pages/api/playlist/[id]";
 import removePlaylist from "../pages/api/playlist/[id]";
 
 test("flow", async () => {
+    jest.setTimeout(12000);
     const playlist1 = {
         name: "Playlist 1",
         owner: "michal.warda@elpassion.pl",

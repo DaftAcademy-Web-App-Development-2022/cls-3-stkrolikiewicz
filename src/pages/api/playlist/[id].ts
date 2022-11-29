@@ -13,7 +13,7 @@ export default async function handler(
         res.status(200).send({ data: playlists });
     } else if (req.method === "DELETE") {
         await removePlaylist(id as string);
-        res.status(200).send({});
+        res.status(200).send({ data: null });
     }
 }
 
@@ -23,7 +23,7 @@ async function getPlaylist(id: string) {
     const playlist = result.toObject();
     return {
         color: playlist.color,
-        id: playlist.id,
+        id: playlist._id.toString(),
         name: playlist.name,
         owner: playlist.owner,
         slug: playlist.slug,
